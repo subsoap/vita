@@ -20,7 +20,7 @@ function M.update(dt)
 	end
 	for k,v in pairs(M.resources) do
 		if v.count < v.natural_max then
-			M.regenerate(tag, dt)
+			M.regenerate(v.id, dt)
 		end
 	end
 end
@@ -53,11 +53,20 @@ function M.create_resource(resource, count, natural_max, regenerate_amount, rege
 	M.resources[resource] = {}
 	M.resources[resource].id = resource
 	M.resources[resource].count = count
+	M.resources[resource].extra = 0 -- extra count which you consume last and don't want to count in regeneration TODO implement
 	M.resources[resource].natural_max = natural_max
 	M.resources[resource].regenerate_amount = regenerate_amount
 	M.resources[resource].regenerate_time = regenerate_time
 	M.resources[resource].regenerate_time_left = 0
 	M.resources[resource].regenerate_extra_time_left = 0
+	M.resources[resource].last_sync = chrono.get_time()
+end
+
+function M.resource_exists(tag)
+	if not M.resources[tag] then
+		return false
+	end
+	return true
 end
 
 -- You should save data with vita.save() whenever you do normal game saves
@@ -71,14 +80,22 @@ function M.update_defsave()
 	defsave.set(M.defsave_filename, M.defsave_key, pack.compress(M.resources, M.pack_obfuscation_key, M.pack_use_obfuscation))
 end
 
--- Add an amount to a resource tag, if not exist it's created
+-- Add an amount to a resource tag base amount
 function M.add(tag, amount)
 	amount = amount or 1
 	M.resources[tag].count = M.resources[tag].count + amount
 end
 
+-- Add an amount to a resoure tag extra amount such as when using real money to buy extra hearts or getting them from friends
+function M.add_extra(tag, amount)
+	amount = amount or 1
+	M.resources[tag].extra = M.resources[tag].extra + amount	
+end
+
 -- Consumes an amount, returns false if amount is more than currently has
 function M.consume(tag, amount)
+	assert(M.resource_exists(tag), "Vita: Resource " .. tostring(tag) .. " does not exist in resources table")
+	-- TODO implement using extra amount
 	amount = amount or 1
 	if amount > M.resources[tag].count then return false end
 	M.resources[tag].count = M.resources[tag].count - amount
@@ -96,6 +113,7 @@ function M.consume(tag, amount)
 			M.resources[tag].regenerate_extra_time_left = M.resources[tag].regenerate_extra_time_left + M.resources[tag].regenerate_time * (amount - 1)
 		end		
 	end
+	
 	return true
 end
 
@@ -106,10 +124,17 @@ end
 
 -- Regenerates a resource tag by its regenerate amount
 function M.regenerate(tag, dt)
+	if M.get_regeneration_time(tag) > 0 or M.get_regenerate_extra_time_left(tag) > 0 then
+
+	end
 end
 
 -- Get time until next regeneration of a resource tag
 function M.get_regeneration_time(tag)
+	return M.resources[tag].regenerate_time_left
+end
+function M.get_regenerate_extra_time_left(tag)
+	return M.resources[tag].regenerate_extra_time_left
 end
 
 return M

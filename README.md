@@ -1,3 +1,5 @@
+![Vita](vita_logo.png)
+
 # Vita
 A generic energy / life system for Defold
 

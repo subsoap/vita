@@ -13,6 +13,9 @@ function init(self)
 	vita.add("energy", 1)
 	vita.consume("energy", 15)
 	print(vita.get("energy"))
+	print(vita.get_regeneration_time("energy"))
+	print(vita.get_regenerate_extra_time_left("energy"))
+	-- vita.consume("blood", 1) -- uncomment to show consuming resources which don't exist
 end
 
 function final(self)
