@@ -1,6 +1,7 @@
 [project]
 title = Vita
-dependencies = https://github.com/subsoap/defsave/archive/master.zip,https://github.com/subsoap/chrono/archive/master.zip
+dependencies = https://github.com/subsoap/defsave/archive/master.zip,https://github.com/subsoap/chrono/archive/master.zip,https://github.com/subsoap/pack/archive/master.zip
+custom_resources = example/,vita/
 
 [library]
 include_dirs = vita

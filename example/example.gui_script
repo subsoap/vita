@@ -5,6 +5,8 @@ local defsave = require("defsave.defsave")
 function init(self)
 	msg.post("@render:", "clear_color", { color = vmath.vector4(168/255, 12/255, 0/255, 1) } )
 	defsave.appname = "Vita"
+	vita.vita_data_filename = "/example/example_data.lua"
+	vita.pack_use_obfuscation = true
 	vita.init()
 end
 
