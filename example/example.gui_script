@@ -1,16 +1,20 @@
 local vita = require("vita.vita")
+local chrono = require("chrono.chrono")
+local defsave = require("defsave.defsave")
 
 function init(self)
 	msg.post("@render:", "clear_color", { color = vmath.vector4(168/255, 12/255, 0/255, 1) } )
+	defsave.appname = "Vita"
+	vita.init()
 end
 
 function final(self)
-	-- Add finalization code here
-	-- Remove this function if not needed
+	vita.final()
 end
 
 function update(self, dt)
-
+	chrono.update(dt)
+	vita.update(dt)
 end
 
 function on_message(self, message_id, message, sender)
