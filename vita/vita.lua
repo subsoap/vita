@@ -18,6 +18,11 @@ function M.update(dt)
 	if M.initiated == false then
 		M.init()
 	end
+	for k,v in pairs(M.resources) do
+		if v.count < v.natural_max then
+			M.regenerate(tag, dt)
+		end
+	end
 end
 
 function M.init()
@@ -51,6 +56,8 @@ function M.create_resource(resource, count, natural_max, regenerate_amount, rege
 	M.resources[resource].natural_max = natural_max
 	M.resources[resource].regenerate_amount = regenerate_amount
 	M.resources[resource].regenerate_time = regenerate_time
+	M.resources[resource].regenerate_time_left = 0
+	M.resources[resource].regenerate_extra_time_left = 0
 end
 
 -- You should save data with vita.save() whenever you do normal game saves
@@ -66,18 +73,43 @@ end
 
 -- Add an amount to a resource tag, if not exist it's created
 function M.add(tag, amount)
+	amount = amount or 1
+	M.resources[tag].count = M.resources[tag].count + amount
 end
 
--- Consumes an amount
+-- Consumes an amount, returns false if amount is more than currently has
 function M.consume(tag, amount)
+	amount = amount or 1
+	if amount > M.resources[tag].count then return false end
+	M.resources[tag].count = M.resources[tag].count - amount
+	if amount == 1 then
+		if M.resources[tag].regenerate_time_left > 0 then
+			M.resources[tag].regenerate_extra_time_left = M.resources[tag].regenerate_extra_time_left + M.resources[tag].regenerate_time
+		else
+			M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time
+		end
+	else
+		if M.resources[tag].regenerate_time_left > 0 then
+			M.resources[tag].regenerate_extra_time_left = M.resources[tag].regenerate_extra_time_left + M.resources[tag].regenerate_time * amount
+		else
+			M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time
+			M.resources[tag].regenerate_extra_time_left = M.resources[tag].regenerate_extra_time_left + M.resources[tag].regenerate_time * (amount - 1)
+		end		
+	end
+	return true
 end
 
 -- Gets the total amount of a resource tag available
 function M.get(tag)
+	return M.resources[tag].count
 end
 
 -- Regenerates a resource tag by its regenerate amount
-function M.regenerate(tag)
+function M.regenerate(tag, dt)
+end
+
+-- Get time until next regeneration of a resource tag
+function M.get_regeneration_time(tag)
 end
 
 return M

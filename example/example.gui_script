@@ -8,6 +8,11 @@ function init(self)
 	vita.vita_data_filename = "/example/example_data.lua"
 	vita.pack_use_obfuscation = true
 	vita.init()
+
+	print(vita.get("energy"))
+	vita.add("energy", 1)
+	vita.consume("energy", 15)
+	print(vita.get("energy"))
 end
 
 function final(self)
