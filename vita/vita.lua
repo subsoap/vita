@@ -138,20 +138,13 @@ end
 -- Consumes an amount, returns false if amount is more than currently has
 function M.consume(tag, amount)
 	assert(M.resource_exists(tag), "Vita: Resource " .. tostring(tag) .. " does not exist in resources table")
-	-- TODO implement using extra amount
 	amount = amount or 1
 	if amount > M.resources[tag].count then 
-		print("haha")
-		print(amount)
-		print(M.resources[tag].count + M.resources[tag].extra)
 		if amount <= M.resources[tag].count + M.resources[tag].extra then
-			print("wtf")
 			if M.resources[tag].count == 0 then
-				print("doki")
 				M.resources[tag].extra = M.resources[tag].extra - amount
 				return true
 			else
-				print(M.resources[tag].count)
 				local remainder = amount - M.resources[tag].count
 				M.resources[tag].count = 0
 				M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time
