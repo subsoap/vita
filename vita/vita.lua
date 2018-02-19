@@ -28,8 +28,12 @@ end
 function M.init()
 	M.vita_data = assert(loadstring(sys.load_resource(M.vita_data_filename)))()
 	defsave.load(M.defsave_filename)
-	M.resources = pack.decompress(defsave.get(M.defsave_filename, M.defsave_key), M.pack_obfuscation_key, M.pack_use_obfuscation) or {}
-	pprint(M.resources)
+	if defsave.get(M.defsave_filename, M.defsave_key) ~= nil then
+		M.resources = pack.decompress(defsave.get(M.defsave_filename, M.defsave_key), M.pack_obfuscation_key, M.pack_use_obfuscation) or {}
+	else
+		M.resources = {}
+	end
+	--pprint(M.resources)
 	M.setup()
 	M.initiated = true
 end
@@ -80,6 +84,22 @@ function M.update_defsave()
 	defsave.set(M.defsave_filename, M.defsave_key, pack.compress(M.resources, M.pack_obfuscation_key, M.pack_use_obfuscation))
 end
 
+-- Set the amount of a resource tag count based on an amount
+function M.set(tag, amount)
+	M.resources[tag].count = amount
+end
+
+-- Set the amount of a resource tag extra count based on an amount - most of the time you want to use use add_extra
+function M.set_extra(tag, amount)
+	M.resources[tag].extra = amount
+end
+
+-- Sets the amount of a resource tag count to its natural max value - instantly refill energy
+function M.set_max(tag)
+	M.resources[tag].count = M.resources[tag].natural_max
+end
+
+
 -- Add an amount to a resource tag base amount
 function M.add(tag, amount)
 	amount = amount or 1
@@ -122,10 +142,38 @@ function M.get(tag)
 	return M.resources[tag].count
 end
 
+-- Gets the natural max amount of a resource tag
+function M.get_max(tag)
+	return M.resources[tag].natural_max
+end
+
+-- Gets the total amount of a resource tag available including extra energy
+function M.get_total(tag)
+	return M.resources[tag].count + M.resources[tag].extra
+end
+
 -- Regenerates a resource tag by its regenerate amount
 function M.regenerate(tag, dt)
+	if M.get(tag) >= M.get_max(tag) then
+		M.resources[tag].regenerate_time_left = 0
+		M.resources[tag].regenerate_extra_time_left = 0
+		return
+	end
 	if M.get_regeneration_time(tag) > 0 or M.get_regenerate_extra_time_left(tag) > 0 then
-
+		M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time_left - dt
+		if M.resources[tag].regenerate_time_left <= 0 then
+			M.add(tag)
+			if M.get_regenerate_extra_time_left(tag) <= 0 then
+				M.resources[tag].regenerate_time_left = 0
+			else
+				M.resources[tag].regenerate_extra_time_left = M.resources[tag].regenerate_extra_time_left - M.resources[tag].regenerate_time
+				M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time_left + M.resources[tag].regenerate_time
+			end
+			if M.get_regenerate_extra_time_left(tag) <= 0 then
+				M.resources[tag].regenerate_extra_time_left = 0
+			end
+		end
+		M.resources[tag].last_sync = chrono.get_time()
 	end
 end
 

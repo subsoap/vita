@@ -1,12 +1,12 @@
 key_trigger {
   input: KEY_Z
-  action: ""
+  action: "key_z"
 }
 key_trigger {
   input: KEY_X
-  action: ""
+  action: "key_x"
 }
 key_trigger {
   input: KEY_C
-  action: ""
+  action: "key_c"
 }

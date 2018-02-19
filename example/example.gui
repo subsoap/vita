@@ -132,7 +132,7 @@ nodes {
 nodes {
   position {
     x: 473.0
-    y: 63.0
+    y: 39.0
     z: 0.0
     w: 1.0
   }
@@ -162,12 +162,73 @@ nodes {
   }
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
-  text: "Press Z to remove 1 heart.\n"
-  "Press X to add 5 hearts.\n"
-  "Heart recharge time is 5 minutes.\n"
-  "5 hearts is max natural amount, but you can increase above this max (such as paying for hearts)."
+  text: "Press Z to consume 1 heart/energy.\n"
+  "Press X to add 5 hearts/energy.\n"
+  "Heart recharge time is 5 minutes. Energy is 10 seconds."
   font: "system_font"
   id: "help"
+  xanchor: XANCHOR_NONE
+  yanchor: YANCHOR_NONE
+  pivot: PIVOT_CENTER
+  outline {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  shadow {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  adjust_mode: ADJUST_MODE_FIT
+  line_break: false
+  layer: ""
+  inherit_alpha: true
+  alpha: 1.0
+  outline_alpha: 1.0
+  shadow_alpha: 1.0
+  template_node_child: false
+  text_leading: 1.0
+  text_tracking: 0.0
+}
+nodes {
+  position {
+    x: 472.0
+    y: 198.0
+    z: 0.0
+    w: 1.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+    z: 0.0
+    w: 1.0
+  }
+  color {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+  type: TYPE_TEXT
+  blend_mode: BLEND_MODE_ALPHA
+  text: "Energy"
+  font: "system_font"
+  id: "energy"
   xanchor: XANCHOR_NONE
   yanchor: YANCHOR_NONE
   pivot: PIVOT_CENTER

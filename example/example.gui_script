@@ -3,18 +3,20 @@ local chrono = require("chrono.chrono")
 local defsave = require("defsave.defsave")
 
 function init(self)
+	msg.post(".", "acquire_input_focus")
 	msg.post("@render:", "clear_color", { color = vmath.vector4(168/255, 12/255, 0/255, 1) } )
 	defsave.appname = "Vita"
 	vita.vita_data_filename = "/example/example_data.lua"
 	vita.pack_use_obfuscation = true
+	vita.verbose = true
 	vita.init()
 
-	print(vita.get("energy"))
-	vita.add("energy", 1)
-	vita.consume("energy", 15)
-	print(vita.get("energy"))
-	print(vita.get_regeneration_time("energy"))
-	print(vita.get_regenerate_extra_time_left("energy"))
+	--print(vita.get("energy"))
+	--vita.add("energy", 1)
+	--vita.consume("energy", 15)
+	--print(vita.get("energy"))
+	--print(vita.get_regeneration_time("energy"))
+	--print(vita.get_regenerate_extra_time_left("energy"))
 	-- vita.consume("blood", 1) -- uncomment to show consuming resources which don't exist
 end
 
@@ -25,6 +27,16 @@ end
 function update(self, dt)
 	chrono.update(dt)
 	vita.update(dt)
+
+	local energy_node = gui.get_node("energy")
+	local energy_text = ""
+	energy_text = "Energy: " .. tostring(vita.get("energy")) .. "/" .. tostring(vita.get_max("energy"))
+	if vita.get("energy") < vita.get_max("energy") then
+		energy_text = energy_text .. "\n" .. "Next In: " .. chrono.format_time(vita.get_regeneration_time("energy"))
+	end
+	gui.set_text(energy_node, energy_text)
+	
+	--print(vita.get_regeneration_time("energy"))
 end
 
 function on_message(self, message_id, message, sender)
@@ -33,8 +45,16 @@ function on_message(self, message_id, message, sender)
 end
 
 function on_input(self, action_id, action)
-	-- Add input-handling code here
-	-- Remove this function if not needed
+	if action_id == hash("key_z") and action.released then
+		vita.consume("hearts", 1)
+		vita.consume("energy", 1)
+	end
+	if action_id == hash("key_x") and action.released then
+		vita.add("hearts", 5)
+		vita.add("energy", 5)		
+	end
+	
+	
 end
 
 function on_reload(self)

@@ -11,7 +11,7 @@ return {
 		count = 25,
 		natural_max = 25,
 		regenerate_amount = 1,
-		regenerate_time = 60 * 2, -- 120 seconds		
+		regenerate_time = 10, --60 * 2, -- 120 seconds		
 	},
 
 }
