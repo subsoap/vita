@@ -18,9 +18,8 @@ function M.update(dt)
 	if M.initiated == false then
 		M.init()
 	end
-	pprint(M.resources)
 	for k,v in pairs(M.resources) do
-		if v.natural_max == nil then -- wtf how is this sometimes being set to nil
+		if v.natural_max == nil then
 			v.natural_max = M.vita_data[v.id].natural_max
 			M.resources[resource].natural_max = M.vita_data[v.id].natural_max
 		end
@@ -44,16 +43,11 @@ function M.init()
 	for i,v in pairs(M.resources) do
 		local time_difference = chrono.get_time() - v.last_sync
 		if time_difference >= v.natural_max * v.regenerate_time then
-			M.set_max(v.id)
+			M.set_to_max(v.id)
 			M.resources[v.id].last_sync = chrono.get_time()
 		else
 			M.regenerate(v.id, time_difference)
 		end
-		
-		print(v.id)
-		print(chrono.get_time() - v.last_sync)
-		print(chrono.get_time())
-		print(v.last_sync)
 		
 	end
 	--]]
@@ -109,7 +103,7 @@ end
 -- Set the amount of a resource tag count based on an amount
 function M.set(tag, amount)
 	M.resources[tag].count = amount
-	--M.regenerate(tag, 0)
+	M.regenerate(tag)
 end
 
 -- Set the amount of a resource tag extra count based on an amount - most of the time you want to use use add_extra
@@ -123,15 +117,14 @@ function M.set_to_max(tag)
 end
 
 -- Changes the natural max value of a resourc tag
-function M.set_max(tag, amount)
-	--M.resources[tag].natural_max = amount
+function M.set_natural_max(tag, amount)
+	M.resources[tag].natural_max = amount
 end
 
--- Add an amount to a resource tag base amount
+-- Add an amount to a resource tag base amount - generally don't do this, use add_extra instead
 function M.add(tag, amount)
 	amount = amount or 1
 	M.resources[tag].count = M.resources[tag].count + amount
-	--M.regenerate(tag, 0)
 end
 
 -- Add an amount to a resoure tag extra amount such as when using real money to buy extra hearts or getting them from friends
@@ -182,35 +175,34 @@ end
 
 -- Regenerates a resource tag by its regenerate amount
 function M.regenerate(tag, dt)
+	dt = dt or 0
 	if M.get(tag) >= M.get_max(tag) then
 		M.resources[tag].regenerate_time_left = 0
 		M.resources[tag].regenerate_extra_time_left = 0
 		return
 	end
+	if M.resources[tag].regenerate_time_left < 0 then
+		M.add(tag)
+		M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time_left + M.resources[tag].regenerate_time
+	end	
 	if M.get_regeneration_time(tag) > 0 or M.get_regenerate_extra_time_left(tag) > 0 then
 		M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time_left - dt
 		if M.resources[tag].regenerate_time_left <= 0 then
 			M.add(tag)
 			if M.resources[tag].regenerate_extra_time_left <= 0 then
-				print(M.resources[tag].regenerate_extra_time_left)
 				M.resources[tag].regenerate_time_left = 0
-				print("poke")
 			else
 				M.resources[tag].regenerate_extra_time_left = M.resources[tag].regenerate_extra_time_left - M.resources[tag].regenerate_time
 				M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time_left + M.resources[tag].regenerate_time
-				print("pop")
 			end
 			if M.resources[tag].regenerate_extra_time_left <= 0 then
 				M.resources[tag].regenerate_extra_time_left = 0
-				print("prod")
 			end
 		end
 		M.resources[tag].last_sync = chrono.get_time()
-		print(M.resources[tag].regenerate_time_left)
-		print(M.resources[tag].regenerate_extra_time_left)
 	end
 	if M.resources[tag].regenerate_time_left < 0 then
-		M.regenerate(tag, 0)
+		M.regenerate(tag)
 	end
 end
 

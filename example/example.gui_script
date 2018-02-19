@@ -59,7 +59,7 @@ function on_input(self, action_id, action)
 		vita.consume("energy", 1)
 	end
 	if action_id == hash("key_x") and action.released then
-		vita.add("hearts", 11)
+		vita.add("hearts", 1)
 		vita.add("energy", 1)		
 	end
 	
