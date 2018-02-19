@@ -35,6 +35,21 @@ function M.init()
 	end
 	--pprint(M.resources)
 	M.setup()
+	for i,v in pairs(M.resources) do
+		local time_difference = chrono.get_time() - v.last_sync
+		if time_difference >= v.natural_max * v.regenerate_time then
+			M.set_max(v.id)
+			M.resources[v.id].last_sync = chrono.get_time()
+		else
+			M.regenerate(v.id, time_difference)
+		end
+		
+		print(v.id)
+		print(chrono.get_time() - v.last_sync)
+		print(chrono.get_time())
+		print(v.last_sync)
+		
+	end
 	M.initiated = true
 end
 
@@ -87,6 +102,7 @@ end
 -- Set the amount of a resource tag count based on an amount
 function M.set(tag, amount)
 	M.resources[tag].count = amount
+	M.regenerate(tag, 0)
 end
 
 -- Set the amount of a resource tag extra count based on an amount - most of the time you want to use use add_extra
@@ -95,21 +111,26 @@ function M.set_extra(tag, amount)
 end
 
 -- Sets the amount of a resource tag count to its natural max value - instantly refill energy
-function M.set_max(tag)
+function M.set_to_max(tag)
 	M.resources[tag].count = M.resources[tag].natural_max
 end
 
+-- Changes the natural max value of a resourc tag
+function M.set_max(tag, amount)
+	M.resources[tag].natural_max = amount
+end
 
 -- Add an amount to a resource tag base amount
 function M.add(tag, amount)
 	amount = amount or 1
 	M.resources[tag].count = M.resources[tag].count + amount
+	M.regenerate(tag, 0)
 end
 
 -- Add an amount to a resoure tag extra amount such as when using real money to buy extra hearts or getting them from friends
 function M.add_extra(tag, amount)
 	amount = amount or 1
-	M.resources[tag].extra = M.resources[tag].extra + amount	
+	M.resources[tag].extra = M.resources[tag].extra + amount
 end
 
 -- Consumes an amount, returns false if amount is more than currently has
@@ -163,17 +184,26 @@ function M.regenerate(tag, dt)
 		M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time_left - dt
 		if M.resources[tag].regenerate_time_left <= 0 then
 			M.add(tag)
-			if M.get_regenerate_extra_time_left(tag) <= 0 then
+			if M.resources[tag].regenerate_extra_time_left <= 0 then
+				print(M.resources[tag].regenerate_extra_time_left)
 				M.resources[tag].regenerate_time_left = 0
+				print("poke")
 			else
 				M.resources[tag].regenerate_extra_time_left = M.resources[tag].regenerate_extra_time_left - M.resources[tag].regenerate_time
 				M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time_left + M.resources[tag].regenerate_time
+				print("pop")
 			end
-			if M.get_regenerate_extra_time_left(tag) <= 0 then
+			if M.resources[tag].regenerate_extra_time_left <= 0 then
 				M.resources[tag].regenerate_extra_time_left = 0
+				print("prod")
 			end
 		end
 		M.resources[tag].last_sync = chrono.get_time()
+		print(M.resources[tag].regenerate_time_left)
+		print(M.resources[tag].regenerate_extra_time_left)
+	end
+	if M.resources[tag].regenerate_time_left < 0 then
+		M.regenerate(tag, 0)
 	end
 end
 

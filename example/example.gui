@@ -163,7 +163,7 @@ nodes {
   type: TYPE_TEXT
   blend_mode: BLEND_MODE_ALPHA
   text: "Press Z to consume 1 heart/energy.\n"
-  "Press X to add 5 hearts/energy.\n"
+  "Press X to add 1 heart/energy.\n"
   "Heart recharge time is 5 minutes. Energy is 10 seconds."
   font: "system_font"
   id: "help"

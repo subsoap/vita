@@ -28,6 +28,15 @@ function update(self, dt)
 	chrono.update(dt)
 	vita.update(dt)
 
+	local hearts_node = gui.get_node("hearts")
+	local hearts_text = ""
+	hearts_text = "Hearts: " .. tostring(vita.get("hearts")) .. "/" .. tostring(vita.get_max("hearts"))
+	if vita.get("hearts") < vita.get_max("hearts") then
+		hearts_text = hearts_text .. "\n" .. "Next In: " .. chrono.format_time(vita.get_regeneration_time("hearts"))
+	end
+	gui.set_text(hearts_node, hearts_text)
+	
+	
 	local energy_node = gui.get_node("energy")
 	local energy_text = ""
 	energy_text = "Energy: " .. tostring(vita.get("energy")) .. "/" .. tostring(vita.get_max("energy"))
@@ -50,8 +59,8 @@ function on_input(self, action_id, action)
 		vita.consume("energy", 1)
 	end
 	if action_id == hash("key_x") and action.released then
-		vita.add("hearts", 5)
-		vita.add("energy", 5)		
+		vita.add("hearts", 11)
+		vita.add("energy", 1)		
 	end
 	
 	
