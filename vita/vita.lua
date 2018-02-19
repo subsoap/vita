@@ -18,7 +18,12 @@ function M.update(dt)
 	if M.initiated == false then
 		M.init()
 	end
+	pprint(M.resources)
 	for k,v in pairs(M.resources) do
+		if v.natural_max == nil then -- wtf how is this sometimes being set to nil
+			v.natural_max = M.vita_data[v.id].natural_max
+			M.resources[resource].natural_max = M.vita_data[v.id].natural_max
+		end
 		if v.count < v.natural_max then
 			M.regenerate(v.id, dt)
 		end
@@ -35,6 +40,7 @@ function M.init()
 	end
 	--pprint(M.resources)
 	M.setup()
+	----[[
 	for i,v in pairs(M.resources) do
 		local time_difference = chrono.get_time() - v.last_sync
 		if time_difference >= v.natural_max * v.regenerate_time then
@@ -50,6 +56,7 @@ function M.init()
 		print(v.last_sync)
 		
 	end
+	--]]
 	M.initiated = true
 end
 
@@ -102,7 +109,7 @@ end
 -- Set the amount of a resource tag count based on an amount
 function M.set(tag, amount)
 	M.resources[tag].count = amount
-	M.regenerate(tag, 0)
+	--M.regenerate(tag, 0)
 end
 
 -- Set the amount of a resource tag extra count based on an amount - most of the time you want to use use add_extra
@@ -117,14 +124,14 @@ end
 
 -- Changes the natural max value of a resourc tag
 function M.set_max(tag, amount)
-	M.resources[tag].natural_max = amount
+	--M.resources[tag].natural_max = amount
 end
 
 -- Add an amount to a resource tag base amount
 function M.add(tag, amount)
 	amount = amount or 1
 	M.resources[tag].count = M.resources[tag].count + amount
-	M.regenerate(tag, 0)
+	--M.regenerate(tag, 0)
 end
 
 -- Add an amount to a resoure tag extra amount such as when using real money to buy extra hearts or getting them from friends
