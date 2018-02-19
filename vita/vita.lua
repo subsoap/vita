@@ -43,8 +43,10 @@ function M.init()
 	for i,v in pairs(M.resources) do
 		local time_difference = chrono.get_time() - v.last_sync
 		if time_difference >= v.natural_max * v.regenerate_time then
+			if M.verbose == true then print("Vita: Max time reached. Setting " .. v.id .. " to its max") end
 			M.set_to_max(v.id)
 			M.resources[v.id].last_sync = chrono.get_time()
+			
 		else
 			M.regenerate(v.id, time_difference)
 		end
@@ -189,6 +191,7 @@ function M.regenerate(tag, dt)
 		M.resources[tag].regenerate_time_left = M.resources[tag].regenerate_time_left - dt
 		if M.resources[tag].regenerate_time_left <= 0 then
 			M.add(tag)
+			if M.verbose == true then print("Vita: Adding to resource " .. tag) end
 			if M.resources[tag].regenerate_extra_time_left <= 0 then
 				M.resources[tag].regenerate_time_left = 0
 			else
